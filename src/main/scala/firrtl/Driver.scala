@@ -93,14 +93,12 @@ object Driver {
     */
     def firrtlConfig = optionsManager.firrtlOptions
 
-    if (firrtlConfig.annotations.isEmpty || firrtlConfig.forceAppendAnnoFile) {
-      val annotationFileName = firrtlConfig.getAnnotationFileName(optionsManager)
-      val annotationFile = new File(annotationFileName)
-      if (annotationFile.exists) {
-        val annotationsYaml = io.Source.fromFile(annotationFile).getLines().mkString("\n").parseYaml
-        val annotationArray = annotationsYaml.convertTo[Array[Annotation]]
-        optionsManager.firrtlOptions = firrtlConfig.copy(annotations = firrtlConfig.annotations ++ annotationArray)
-      }
+    val annotationFileName = firrtlConfig.getAnnotationFileName(optionsManager)
+    val annotationFile = new File(annotationFileName)
+    if (annotationFile.exists) {
+      val annotationsYaml = io.Source.fromFile(annotationFile).getLines().mkString("\n").parseYaml
+      val annotationArray = annotationsYaml.convertTo[Array[Annotation]]
+      optionsManager.firrtlOptions = firrtlConfig.copy(annotations = firrtlConfig.annotations ++ annotationArray)
     }
 
     if(firrtlConfig.annotations.nonEmpty) {
