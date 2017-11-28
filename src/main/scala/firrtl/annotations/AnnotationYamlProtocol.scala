@@ -9,8 +9,8 @@ object AnnotationYamlProtocol extends DefaultYamlProtocol {
   // bottom depends on top
   implicit object AnnotationYamlFormat extends YamlFormat[Annotation] {
     def write(a: Annotation) = YamlObject(
-      YamlString("targetString") -> YamlString(a.targetString),
-      YamlString("transformClass") -> YamlString(a.transformClass),
+      YamlString("targetString") -> YamlString(a.serialize),
+      YamlString("transformClass") -> YamlString(a.transform.getName),
       YamlString("value") -> YamlString(a.value)
     )
 

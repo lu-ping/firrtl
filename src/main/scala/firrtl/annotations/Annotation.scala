@@ -8,7 +8,30 @@ import firrtl.annotations.AnnotationYamlProtocol._
 
 case class AnnotationException(message: String) extends Exception(message)
 
-final case class Annotation(target: Named, transform: Class[_ <: Transform], value: String) {
+trait Annotation {
+  def target: Named
+  def transform: Class[_ <: Transform]
+  def value: String
+  /** Pretty print
+    * @return a nicer string than the raw case class default
+    */
+  def serialize: String
+  def update(tos: Seq[Named]): Seq[Annotation]
+  def propagate(from: Named, tos: Seq[Named], dup: Named=>Annotation): Seq[Annotation]
+  def check(from: Named, tos: Seq[Named], which: Annotation): Unit
+  def duplicate(n: Named): Annotation
+}
+object Annotation {
+  def apply(target: Named, transform: Class[_ <: Transform], value: String) =
+    LegacyAnnotation(target, transform, value)
+  def unapply(a: LegacyAnnotation): Option[(Named, Class[_ <: Transform], String)] =
+    Some((a.target, a.transform, a.value))
+}
+
+final case class LegacyAnnotation(
+    target: Named,
+    transform: Class[_ <: Transform],
+    value: String) extends Annotation {
   val targetString: String = target.serialize
   val transformClass: String = transform.getName
 
